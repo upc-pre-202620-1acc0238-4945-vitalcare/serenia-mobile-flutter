@@ -10,6 +10,13 @@ abstract class AuthRepository {
   });
   Future<User> getUser(String userId);
   Future<String?> currentUserId();
+  Future<User> updateProfile({
+    required String fullName,
+    String? phoneNumber,
+    String? birthDate,
+  });
+  Future<User> uploadPhoto(List<int> bytes);
+  Future<void> changePassword(String currentPassword, String newPassword);
   Future<void> signOut();
   Future<bool> isSignedIn();
 }
