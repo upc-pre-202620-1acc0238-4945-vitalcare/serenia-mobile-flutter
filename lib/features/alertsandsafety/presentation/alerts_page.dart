@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:serenia_app/core/serenia_colors.dart';
 import 'package:serenia_app/core/serenia_dimens.dart';
-import 'package:serenia_app/core/service_locator.dart';
 import 'package:serenia_app/core/widgets/empty_state.dart';
 import 'package:serenia_app/core/widgets/load_error.dart';
 import 'package:serenia_app/core/widgets/screen_header.dart';
@@ -16,14 +15,13 @@ import 'package:serenia_app/features/alertsandsafety/presentation/alert_people.d
 import 'package:serenia_app/features/alertsandsafety/presentation/alerts_view_model.dart';
 
 class AlertsPage extends StatelessWidget {
-  const new({super.key});
+  final AlertsViewModel _viewModel;
+
+  const new({super.key, required this._viewModel});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<AlertsViewModel>()..load(),
-      child: const _AlertsView(),
-    );
+    return BlocProvider.value(value: _viewModel, child: const _AlertsView());
   }
 }
 

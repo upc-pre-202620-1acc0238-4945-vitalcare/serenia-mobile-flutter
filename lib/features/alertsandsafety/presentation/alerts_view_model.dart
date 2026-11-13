@@ -27,6 +27,8 @@ class AlertsState {
     return alerts.where((alert) => alert.status.isOpen).toList();
   }
 
+  int get openCount => open.length;
+
   List<CareAlert> get previous {
     return alerts.where((alert) => alert.status.isResolved).toList();
   }
