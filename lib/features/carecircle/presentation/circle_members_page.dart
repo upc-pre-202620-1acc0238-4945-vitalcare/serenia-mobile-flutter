@@ -15,6 +15,8 @@ import 'package:serenia_app/features/carecircle/domain/relationship.dart';
 import 'package:serenia_app/features/carecircle/presentation/care_shifts_page.dart';
 import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
+import 'package:serenia_app/features/carecircle/presentation/shared_notes_page.dart';
+import 'package:serenia_app/features/carecircle/presentation/shared_notes_view_model.dart';
 
 class CircleMembersPage extends StatelessWidget {
   final CircleViewModel _viewModel;
@@ -54,6 +56,23 @@ class CircleMembersPage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => CareShiftsPage(viewModel: shifts),
+      ),
+    );
+    await _viewModel.load(refresh: true);
+  }
+
+  Future<void> _openSharedNotes(BuildContext context) async {
+    final SharedNotesViewModel notes = getIt<SharedNotesViewModel>();
+    notes.open(
+      careCircleId: _viewModel.circle!.careCircleId,
+      olderAdultFirstName: _viewModel.olderAdultFirstName,
+      members: _viewModel.members,
+      token: _viewModel.token,
+    );
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SharedNotesPage(viewModel: notes),
       ),
     );
     await _viewModel.load(refresh: true);
@@ -116,7 +135,7 @@ class CircleMembersPage extends StatelessWidget {
                     iconColor: SereniaColors.durazno900,
                     title: 'Notas compartidas',
                     subtitle: _viewModel.notesSummary,
-                    onTap: () {},
+                    onTap: () => _openSharedNotes(context),
                   ),
                   const Spacer(),
                   Center(
