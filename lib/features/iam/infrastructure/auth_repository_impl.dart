@@ -1,14 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:serenia_app/core/api_constants.dart';
+import 'package:serenia_app/core/api_exception.dart';
 import 'package:serenia_app/core/session.dart';
 import 'package:serenia_app/core/session_storage.dart';
 import 'package:serenia_app/features/iam/domain/auth_repository.dart';
+import 'package:serenia_app/features/iam/domain/incorrect_password_exception.dart';
+import 'package:serenia_app/features/iam/domain/unsupported_photo_exception.dart';
 import 'package:serenia_app/features/iam/domain/user.dart';
 import 'package:serenia_app/features/iam/domain/user_role.dart';
 import 'package:serenia_app/features/iam/infrastructure/remote/authenticated_user_dto.dart';
+import 'package:serenia_app/features/iam/infrastructure/remote/change_password_request_dto.dart';
 import 'package:serenia_app/features/iam/infrastructure/remote/iam_api.dart';
 import 'package:serenia_app/features/iam/infrastructure/remote/register_user_request_dto.dart';
 import 'package:serenia_app/features/iam/infrastructure/remote/sign_in_request_dto.dart';
+import 'package:serenia_app/features/iam/infrastructure/remote/update_profile_request_dto.dart';
 import 'package:serenia_app/features/iam/infrastructure/remote/user_dto.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -69,6 +77,73 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<User> updateProfile({
+    required String fullName,
+    String? phoneNumber,
+    String? birthDate,
+  }) async {
+    final Session session = await _requireSession();
+    final UserDto dto = await _api.updateProfile(
+      session.userId,
+      UpdateProfileRequestDto(
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+        birthDate: birthDate,
+        locale: locale,
+        timeZone: timeZone,
+      ),
+      session.token,
+    );
+    return _toUser(dto);
+  }
+
+  @override
+  Future<User> uploadPhoto(List<int> bytes) async {
+    final MediaType? contentType = _imageType(bytes);
+    if (contentType == null) {
+      throw const UnsupportedPhotoException();
+    }
+    final Session session = await _requireSession();
+    try {
+      final UserDto dto = await _api.uploadPhoto(
+        session.userId,
+        bytes,
+        contentType,
+        session.token,
+      );
+      return _toUser(dto);
+    } on ApiException catch (e) {
+      if (e.statusCode == HttpStatus.unsupportedMediaType) {
+        throw const UnsupportedPhotoException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    final Session session = await _requireSession();
+    try {
+      await _api.changePassword(
+        session.userId,
+        ChangePasswordRequestDto(
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+        ),
+        session.token,
+      );
+    } on ApiException catch (e) {
+      if (e.statusCode == HttpStatus.unprocessableEntity) {
+        throw const IncorrectPasswordException();
+      }
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     final Session? session = await _storage.getSession();
     if (session != null) {
@@ -93,6 +168,31 @@ class AuthRepositoryImpl implements AuthRepository {
           ? null
           : '${ApiConstants.host}${dto.photoUrl}',
     );
+  }
+
+  Future<Session> _requireSession() async {
+    final Session? session = await _storage.getSession();
+    if (session == null) {
+      throw StateError('There is no active session');
+    }
+    return session;
+  }
+
+  MediaType? _imageType(List<int> bytes) {
+    if (bytes.length > 3 &&
+        bytes[0] == 0xFF &&
+        bytes[1] == 0xD8 &&
+        bytes[2] == 0xFF) {
+      return MediaType('image', 'jpeg');
+    }
+    if (bytes.length > 8 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47) {
+      return MediaType('image', 'png');
+    }
+    return null;
   }
 
   String _deviceInfo() {
