@@ -78,6 +78,7 @@ class SereniaNavigationBar extends StatelessWidget {
               minHeight: SereniaTouch.navigationItem,
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 2,
               children: [
