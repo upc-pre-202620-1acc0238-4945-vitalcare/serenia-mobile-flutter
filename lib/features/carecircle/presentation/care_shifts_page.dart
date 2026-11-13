@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:serenia_app/core/serenia_dimens.dart';
+import 'package:serenia_app/core/service_locator.dart';
 import 'package:serenia_app/core/widgets/back_link.dart';
 import 'package:serenia_app/core/widgets/day_shift_card.dart';
 import 'package:serenia_app/core/widgets/load_error.dart';
 import 'package:serenia_app/core/widgets/screen_header.dart';
 import 'package:serenia_app/core/widgets/serenia_buttons.dart';
+import 'package:serenia_app/core/widgets/serenia_snack_bar.dart';
 import 'package:serenia_app/core/widgets/week_strip.dart';
 import 'package:serenia_app/features/carecircle/domain/care_shift.dart';
 import 'package:serenia_app/features/carecircle/domain/care_shift_rules.dart';
 import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_date_format.dart';
+import 'package:serenia_app/features/carecircle/presentation/reassign_care_shift_page.dart';
+import 'package:serenia_app/features/carecircle/presentation/reassign_care_shift_view_model.dart';
 
 class CareShiftsPage extends StatelessWidget {
   final CareShiftsViewModel _viewModel;
@@ -39,7 +43,29 @@ class CareShiftsPage extends StatelessWidget {
     return '${names.sublist(0, names.length - 1).join(', ')} y ${names.last}';
   }
 
-  Widget _dayCard(CareShift day) {
+  Future<void> _openReassign(BuildContext context, CareShift day) async {
+    final ReassignCareShiftViewModel reassign =
+        getIt<ReassignCareShiftViewModel>();
+    reassign.open(
+      careCircleId: _viewModel.careCircleId,
+      shift: day,
+      members: _viewModel.members,
+      token: _viewModel.token,
+    );
+    final String? newAssignee = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReassignCareShiftPage(viewModel: reassign),
+      ),
+    );
+    if (newAssignee == null) return;
+    await _viewModel.loadWeek();
+    if (context.mounted) {
+      showSereniaSnackBar(context, 'Le pasaste el turno a $newAssignee.');
+    }
+  }
+
+  Widget _dayCard(BuildContext context, CareShift day) {
     final bool isToday =
         CircleDateFormat.daysBetween(_viewModel.today, day.date) == 0;
     final String label = CircleDateFormat.dayLabel(day.date, _viewModel.today);
@@ -56,6 +82,15 @@ class CareShiftsPage extends StatelessWidget {
             ? 'Una llamada o un mensaje cuentan.'
             : 'Una llamada o un mensaje cuentan. '
                   '${_joinNames(others)} $verb que $when estás tú.',
+        actions: [
+          if (others.isNotEmpty &&
+              !CareShiftRules.isPast(day.date, _viewModel.today))
+            SecondaryButton(
+              label: 'Pasarle el turno a alguien',
+              icon: Icons.swap_horiz_rounded,
+              onPressed: () => _openReassign(context, day),
+            ),
+        ],
       );
     }
 
@@ -117,7 +152,7 @@ class CareShiftsPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _week() {
+  List<Widget> _week(BuildContext context) {
     final CareShift? selected = _viewModel.selectedDay;
     if (_viewModel.errorMessage != null) {
       return [
@@ -147,7 +182,7 @@ class CareShiftsPage extends StatelessWidget {
         onPrev: _viewModel.previousWeek,
         onNext: _viewModel.canGoNext ? _viewModel.nextWeek : null,
       ),
-      _dayCard(selected),
+      _dayCard(context, selected),
     ];
   }
 
@@ -174,7 +209,7 @@ class CareShiftsPage extends StatelessWidget {
                       'Quién da seguimiento a ${_viewModel.olderAdultFirstName} '
                       'cada día, para que nadie asuma que otro ya la llamó.',
                 ),
-                for (final Widget section in _week()) ...[
+                for (final Widget section in _week(context)) ...[
                   const SizedBox(height: SereniaSpacing.gap),
                   section,
                 ],
