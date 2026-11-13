@@ -20,6 +20,8 @@ class SereniaTextField extends StatefulWidget {
   final int _maxLines;
   final ValueChanged<String>? _onChanged;
   final ValueChanged<String>? _onSubmitted;
+  final bool _invalid;
+  final bool _mayor;
 
   const new({
     super.key,
@@ -38,6 +40,8 @@ class SereniaTextField extends StatefulWidget {
     this._maxLines = 1,
     this._onChanged,
     this._onSubmitted,
+    this._invalid = false,
+    this._mayor = false,
   });
 
   @override
@@ -56,7 +60,14 @@ class _SereniaTextFieldState extends State<SereniaTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasError = widget._error != null;
+    final bool hasError = widget._error != null || widget._invalid;
+    final bool mayor = widget._mayor;
+    final double labelSize = mayor ? 20 : 16;
+    final double labelHeight = mayor ? 26 : 22;
+    final double inputSize = mayor ? 20 : 17;
+    final double inputHeight = mayor ? 28 : 24;
+    final double helperSize = mayor ? 18 : 14;
+    final double helperHeight = mayor ? 24 : 20;
     final OutlineInputBorder enabledBorder = hasError
         ? _border(SereniaColors.error, 3)
         : _border(SereniaColors.borderControl, 2);
@@ -66,14 +77,14 @@ class _SereniaTextFieldState extends State<SereniaTextField> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 6,
+      spacing: mayor ? SereniaSpacing.sm : 6,
       children: [
         Text(
           widget._label,
-          style: const TextStyle(
+          style: TextStyle(
             color: SereniaColors.text,
-            fontSize: 16,
-            height: 22 / 16,
+            fontSize: labelSize,
+            height: labelHeight / labelSize,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -90,31 +101,31 @@ class _SereniaTextFieldState extends State<SereniaTextField> {
           maxLines: widget._isPassword ? 1 : widget._maxLines,
           onChanged: widget._onChanged,
           onSubmitted: widget._onSubmitted,
-          style: const TextStyle(
+          style: TextStyle(
             color: SereniaColors.text,
-            fontSize: 17,
-            height: 24 / 17,
+            fontSize: inputSize,
+            height: inputHeight / inputSize,
             fontWeight: FontWeight.w600,
           ),
           decoration: InputDecoration(
             filled: true,
             fillColor: SereniaColors.surface,
             hintText: widget._hint,
-            hintStyle: const TextStyle(
+            hintStyle: TextStyle(
               color: SereniaColors.neutro600,
-              fontSize: 17,
+              fontSize: inputSize,
               fontWeight: FontWeight.w600,
             ),
             prefixText: widget._prefixText,
-            prefixStyle: const TextStyle(
+            prefixStyle: TextStyle(
               color: SereniaColors.neutro700,
-              fontSize: 17,
+              fontSize: inputSize,
               fontWeight: FontWeight.w700,
             ),
-            constraints: const BoxConstraints(minHeight: 56),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: SereniaSpacing.md,
-              vertical: SereniaSpacing.md,
+            constraints: BoxConstraints(minHeight: mayor ? 64 : 56),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: mayor ? 18 : SereniaSpacing.md,
+              vertical: mayor ? 18 : SereniaSpacing.md,
             ),
             enabledBorder: enabledBorder,
             focusedBorder: focusedBorder,
@@ -125,7 +136,7 @@ class _SereniaTextFieldState extends State<SereniaTextField> {
                         ? 'Mostrar contraseña'
                         : 'Ocultar contraseña',
                     color: SereniaColors.neutro700,
-                    iconSize: 24,
+                    iconSize: mayor ? 28 : 24,
                     onPressed: () => setState(() => _obscured = !_obscured),
                     icon: Icon(
                       _obscured
@@ -136,15 +147,15 @@ class _SereniaTextFieldState extends State<SereniaTextField> {
                 : null,
           ),
         ),
-        if (hasError)
-          FieldError(widget._error!)
-        else if (widget._helper != null)
+        if (widget._error != null)
+          FieldError(widget._error!, mayor: mayor)
+        else if (widget._helper != null && !hasError)
           Text(
             widget._helper!,
-            style: const TextStyle(
+            style: TextStyle(
               color: SereniaColors.neutro700,
-              fontSize: 14,
-              height: 20 / 14,
+              fontSize: helperSize,
+              height: helperHeight / helperSize,
               fontWeight: FontWeight.w600,
             ),
           ),
