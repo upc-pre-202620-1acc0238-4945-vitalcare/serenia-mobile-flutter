@@ -21,6 +21,7 @@ import 'package:serenia_app/features/carecircle/domain/care_circle_repository.da
 import 'package:serenia_app/features/carecircle/infrastructure/care_circle_repository_impl.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_api.dart';
 import 'package:serenia_app/features/carecircle/presentation/connected_view_model.dart';
+import 'package:serenia_app/features/carecircle/application/assign_care_shift_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_care_shifts_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_circle_members_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_shared_notes_use_case.dart';
@@ -30,6 +31,7 @@ import 'package:serenia_app/features/carecircle/infrastructure/care_shift_reposi
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_shifts_api.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/shared_notes_api.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/shared_note_repository_impl.dart';
+import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/invitation_code_view_model.dart';
 import 'package:serenia_app/features/iam/application/get_current_user_use_case.dart';
@@ -255,6 +257,17 @@ void setupDependencies() {
       getCareShifts: getIt<GetCareShiftsUseCase>(),
       getSharedNotes: getIt<GetSharedNotesUseCase>(),
       storage: getIt<SessionStorage>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<AssignCareShiftUseCase>(
+    () => AssignCareShiftUseCase(repository: getIt<CareShiftRepository>()),
+  );
+
+  getIt.registerLazySingleton<CareShiftsViewModel>(
+    () => CareShiftsViewModel(
+      getCareShifts: getIt<GetCareShiftsUseCase>(),
+      assignCareShift: getIt<AssignCareShiftUseCase>(),
     ),
   );
 }
