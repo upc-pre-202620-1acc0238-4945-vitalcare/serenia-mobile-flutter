@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:serenia_app/core/service_locator.dart';
 import 'package:serenia_app/features/account/presentation/account_page.dart';
 import 'package:serenia_app/features/alertsandsafety/presentation/alerts_page.dart';
-import 'package:serenia_app/features/carecircle/presentation/circle_page.dart';
+import 'package:serenia_app/features/carecircle/presentation/circle_members_page.dart';
+import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
 import 'package:serenia_app/features/home/presentation/home_page.dart';
 import 'package:serenia_app/features/main/serenia_navigation_bar.dart';
 import 'package:serenia_app/features/socialcompanionship/presentation/messages_page.dart';
@@ -28,7 +30,9 @@ class _MainPageState extends State<MainPage> {
     return switch (tab) {
       SereniaTab.home => const HomePage(),
       SereniaTab.alerts => const AlertsPage(),
-      SereniaTab.circle => const CirclePage(),
+      SereniaTab.circle => CircleMembersPage(
+        viewModel: getIt<CircleViewModel>()..load(),
+      ),
       SereniaTab.messages => const MessagesPage(),
       SereniaTab.account => const AccountPage(),
     };

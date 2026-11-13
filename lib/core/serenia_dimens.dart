@@ -9,6 +9,10 @@ class SereniaSpacing {
   static const double xxl = 48;
   static const double xxxl = 64;
   static const double screen = 20;
+  static const double sectionTop = 6;
+  static const double tight = 10;
+  static const double gap = 12;
+  static const double cardInset = 14;
 }
 
 class SereniaRadius {
@@ -36,4 +40,11 @@ class SereniaTouch {
   static const double button = 52;
   static const double accessButton = 56;
   static const double navigationItem = 60;
+}
+
+class SereniaSizes {
+  static const double avatar = 48;
+  static const double cardIcon = 44;
+  static const double memberTile = 68;
+  static const double linkIcon = 18;
 }
