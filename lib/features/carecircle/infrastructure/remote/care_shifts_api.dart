@@ -6,6 +6,7 @@ import 'package:serenia_app/core/api_constants.dart';
 import 'package:serenia_app/core/api_exception.dart';
 import 'package:serenia_app/core/api_headers.dart';
 import 'package:serenia_app/core/session_storage.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/remote/assign_care_shift_request_dto.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_shift_dto.dart';
 
 class CareShiftsApi {
@@ -36,6 +37,22 @@ class CareShiftsApi {
     if (response.statusCode == HttpStatus.ok) {
       final List jsons = _decode(response);
       return jsons.map((json) => CareShiftDto.fromJson(json)).toList();
+    }
+    throw ApiException.fromResponse(response);
+  }
+
+  Future<CareShiftDto> assignCareShift(
+    String careCircleId,
+    AssignCareShiftRequestDto request,
+  ) async {
+    final http.Response response = await http.post(
+      Uri.parse('$careCirclesUrl/$careCircleId/care-shifts'),
+      headers: await _headers(),
+      body: jsonEncode(request.toJson()),
+    );
+
+    if (response.statusCode == HttpStatus.created) {
+      return CareShiftDto.fromJson(_decode(response));
     }
     throw ApiException.fromResponse(response);
   }
