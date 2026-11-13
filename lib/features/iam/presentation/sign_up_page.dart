@@ -9,7 +9,7 @@ import 'package:serenia_app/core/widgets/back_link.dart';
 import 'package:serenia_app/core/widgets/serenia_buttons.dart';
 import 'package:serenia_app/core/widgets/serenia_text_field.dart';
 import 'package:serenia_app/core/widgets/step_indicator.dart';
-import 'package:serenia_app/features/home/presentation/home_page.dart';
+import 'package:serenia_app/features/carecircle/presentation/relationship_page.dart';
 import 'package:serenia_app/features/iam/domain/phone_number.dart';
 import 'package:serenia_app/features/iam/presentation/account_prompt.dart';
 import 'package:serenia_app/features/iam/presentation/sign_in_page.dart';
@@ -70,7 +70,7 @@ class _SignUpFormState extends State<_SignUpForm> {
         if (state is SignUpSuccess) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            MaterialPageRoute(builder: (context) => const RelationshipPage()),
             (route) => false,
           );
         }

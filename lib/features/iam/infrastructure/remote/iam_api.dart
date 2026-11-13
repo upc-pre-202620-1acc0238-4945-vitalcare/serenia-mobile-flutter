@@ -46,6 +46,21 @@ class IamApi {
     throw ApiException.fromResponse(response);
   }
 
+  Future<UserDto> getUser(String userId, String token) async {
+    final http.Response response = await http.get(
+      Uri.parse('$usersUrl/$userId'),
+      headers: ApiHeaders.json(token: token),
+    );
+
+    if (response.statusCode == HttpStatus.ok) {
+      final Map<String, dynamic> json = jsonDecode(
+        utf8.decode(response.bodyBytes),
+      );
+      return UserDto.fromJson(json);
+    }
+    throw ApiException.fromResponse(response);
+  }
+
   Future<void> signOut(String sessionId, String token) async {
     final http.Response response = await http.delete(
       Uri.parse('$sessionsUrl/$sessionId'),
