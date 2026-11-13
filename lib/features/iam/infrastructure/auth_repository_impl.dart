@@ -56,6 +56,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<User> getUser(String userId) async {
+    final String? token = await _storage.getToken();
+    final UserDto dto = await _api.getUser(userId, token ?? '');
+    return _toUser(dto);
+  }
+
+  @override
+  Future<String?> currentUserId() async {
+    final Session? session = await _storage.getSession();
+    return session?.userId;
+  }
+
+  @override
   Future<void> signOut() async {
     final Session? session = await _storage.getSession();
     if (session != null) {

@@ -8,6 +8,8 @@ abstract class AuthRepository {
     required String password,
     String? phoneNumber,
   });
+  Future<User> getUser(String userId);
+  Future<String?> currentUserId();
   Future<void> signOut();
   Future<bool> isSignedIn();
 }
