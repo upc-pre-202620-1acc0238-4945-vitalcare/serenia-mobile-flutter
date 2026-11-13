@@ -6,12 +6,15 @@ import 'package:serenia_app/features/account/presentation/account_view_model.dar
 import 'package:serenia_app/features/account/presentation/change_password_view_model.dart';
 import 'package:serenia_app/features/account/presentation/profile_data_view_model.dart';
 import 'package:serenia_app/features/alertsandsafety/application/acknowledge_alert_use_case.dart';
+import 'package:serenia_app/features/alertsandsafety/application/call_older_adult_use_case.dart';
 import 'package:serenia_app/features/alertsandsafety/application/get_alerts_use_case.dart';
 import 'package:serenia_app/features/alertsandsafety/application/resolve_alert_use_case.dart';
 import 'package:serenia_app/features/alertsandsafety/domain/alerts_repository.dart';
 import 'package:serenia_app/features/alertsandsafety/domain/care_alert.dart';
+import 'package:serenia_app/features/alertsandsafety/domain/phone_dialer.dart';
 import 'package:serenia_app/features/alertsandsafety/infrastructure/alerts_repository_impl.dart';
 import 'package:serenia_app/features/alertsandsafety/infrastructure/remote/alerts_api.dart';
+import 'package:serenia_app/features/alertsandsafety/infrastructure/url_launcher_phone_dialer.dart';
 import 'package:serenia_app/features/alertsandsafety/presentation/alert_detail_view_model.dart';
 import 'package:serenia_app/features/alertsandsafety/presentation/alerts_view_model.dart';
 import 'package:serenia_app/features/carecircle/application/get_my_circle_use_case.dart';
@@ -195,6 +198,12 @@ void setupDependencies() {
     () => ResolveAlertUseCase(repository: getIt<AlertsRepository>()),
   );
 
+  getIt.registerLazySingleton<PhoneDialer>(() => UrlLauncherPhoneDialer());
+
+  getIt.registerLazySingleton<CallOlderAdultUseCase>(
+    () => CallOlderAdultUseCase(dialer: getIt<PhoneDialer>()),
+  );
+
   getIt.registerFactory<AlertsViewModel>(
     () => AlertsViewModel(
       getMyCircle: getIt<GetMyCircleUseCase>(),
@@ -207,6 +216,7 @@ void setupDependencies() {
     (alert, _) => AlertDetailViewModel(
       acknowledge: getIt<AcknowledgeAlertUseCase>(),
       resolve: getIt<ResolveAlertUseCase>(),
+      callOlderAdult: getIt<CallOlderAdultUseCase>(),
       alert: alert,
     ),
   );

@@ -97,6 +97,13 @@ class _AlertDetailView extends StatelessWidget {
                     spacing: 10,
                     children: [
                       if (state.error != null) AlertBanner(state.error!),
+                      if (_people.canCallOlderAdult && alert.status.isOpen)
+                        _CallButton(
+                          alert: alert,
+                          people: _people,
+                          onPressed: () =>
+                              viewModel.call(_people.olderAdultPhoneNumber!),
+                        ),
                       if (alert.status.isPending) ...[
                         StrongOutlineButton(
                           label: 'Yo me encargo',
@@ -130,6 +137,48 @@ class _AlertDetailView extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _CallButton extends StatelessWidget {
+  final CareAlert _alert;
+  final AlertPeople _people;
+  final VoidCallback _onPressed;
+
+  const new({
+    required this._alert,
+    required this._people,
+    required this._onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final String label = 'Llamar a ${_people.olderAdultFirstName}';
+    final bool outlined = _alert.status.isAcknowledged;
+
+    if (_alert.isEmergency) {
+      return outlined
+          ? PillButton(
+              label: label,
+              icon: Icons.phone_rounded,
+              onPressed: _onPressed,
+              background: SereniaColors.surface,
+              foreground: SereniaColors.errorText,
+              borderColor: SereniaColors.error,
+            )
+          : EmergencyButton(label: label, onPressed: _onPressed);
+    }
+    return outlined
+        ? SecondaryButton(
+            label: label,
+            icon: Icons.phone_rounded,
+            onPressed: _onPressed,
+          )
+        : PrimaryButton(
+            label: label,
+            icon: Icons.phone_rounded,
+            onPressed: _onPressed,
+          );
   }
 }
 

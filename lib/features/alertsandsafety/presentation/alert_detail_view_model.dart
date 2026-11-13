@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:serenia_app/core/error_messages.dart';
 import 'package:serenia_app/features/alertsandsafety/application/acknowledge_alert_use_case.dart';
+import 'package:serenia_app/features/alertsandsafety/application/call_older_adult_use_case.dart';
 import 'package:serenia_app/features/alertsandsafety/application/resolve_alert_use_case.dart';
 import 'package:serenia_app/features/alertsandsafety/domain/alert_state_conflict_exception.dart';
 import 'package:serenia_app/features/alertsandsafety/domain/care_alert.dart';
@@ -38,12 +39,23 @@ class AlertDetailState {
 class AlertDetailViewModel extends Cubit<AlertDetailState> {
   final AcknowledgeAlertUseCase _acknowledge;
   final ResolveAlertUseCase _resolve;
+  final CallOlderAdultUseCase _callOlderAdult;
 
   new({
     required this._acknowledge,
     required this._resolve,
+    required this._callOlderAdult,
     required CareAlert alert,
   }) : super(AlertDetailState(alert: alert));
+
+  static const String callFailed =
+      'No pudimos abrir el teléfono de tu celular. Intenta de nuevo.';
+
+  Future<void> call(String phoneNumber) async {
+    final bool opened = await _callOlderAdult.execute(phoneNumber);
+    if (isClosed) return;
+    emit(state.copyWith(error: () => opened ? null : callFailed));
+  }
 
   Future<void> acknowledge() async {
     if (state.acting) return;
