@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:serenia_app/core/service_locator.dart';
 
 void main() {
+  setupDependencies();
   runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return MaterialApp(
+      title: 'Serenia',
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(),
     );
   }
 }
