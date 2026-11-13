@@ -11,6 +11,8 @@ import 'package:serenia_app/core/widgets/serenia_text_field.dart';
 import 'package:serenia_app/core/widgets/step_indicator.dart';
 import 'package:serenia_app/features/home/presentation/home_page.dart';
 import 'package:serenia_app/features/iam/domain/phone_number.dart';
+import 'package:serenia_app/features/iam/presentation/account_prompt.dart';
+import 'package:serenia_app/features/iam/presentation/sign_in_page.dart';
 import 'package:serenia_app/features/iam/presentation/sign_up_state.dart';
 import 'package:serenia_app/features/iam/presentation/sign_up_view_model.dart';
 
@@ -179,6 +181,16 @@ class _SignUpFormState extends State<_SignUpForm> {
                             onPressed: _submit,
                             size: ButtonSize.large,
                             loading: state is SignUpLoading,
+                          ),
+                          AccountPrompt(
+                            question: '¿Ya tienes cuenta?',
+                            action: 'Iniciar sesión',
+                            onTap: () => Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignInPage(),
+                              ),
+                            ),
                           ),
                         ],
                       ),
