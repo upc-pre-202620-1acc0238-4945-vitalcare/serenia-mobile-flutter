@@ -74,6 +74,14 @@ class CareCircleRepositoryImpl implements CareCircleRepository {
     return circle;
   }
 
+  @override
+  Future<List<FamilyLink>> getCircleFamilyLinks(String careCircleId) async {
+    final List<FamilyLinkDto> dtos = await _api.getFamilyLinksOfCircle(
+      careCircleId,
+    );
+    return dtos.map(_toFamilyLink).toList();
+  }
+
   FamilyLink _toFamilyLink(FamilyLinkDto dto) {
     return FamilyLink(
       id: dto.id,
