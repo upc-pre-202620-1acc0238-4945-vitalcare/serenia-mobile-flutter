@@ -19,12 +19,15 @@ class ReassignCareShiftViewModel extends ChangeNotifier {
   CareShift? shift;
   List<CircleMember> candidates = [];
   String? selectedUserId;
+  String? token;
 
   void open({
     required String careCircleId,
     required CareShift shift,
     required List<CircleMember> members,
+    String? token,
   }) {
+    this.token = token;
     this.careCircleId = careCircleId;
     this.shift = shift;
     candidates = [

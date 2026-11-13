@@ -27,6 +27,7 @@ class CareShiftsViewModel extends ChangeNotifier {
   String careCircleId = '';
   String olderAdultFirstName = '';
   List<CircleMember> members = [];
+  String? token;
   late DateTime today;
   late DateTime weekStart;
   List<CareShift> days = [];
@@ -80,10 +81,12 @@ class CareShiftsViewModel extends ChangeNotifier {
     required String careCircleId,
     required String olderAdultFirstName,
     required List<CircleMember> members,
+    String? token,
   }) async {
     this.careCircleId = careCircleId;
     this.olderAdultFirstName = olderAdultFirstName;
     this.members = members;
+    this.token = token;
     today = CareShiftRules.dateOnly(DateTime.now());
     weekStart = _mondayOf(today);
     selectedIndex = today.weekday - 1;

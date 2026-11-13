@@ -48,6 +48,7 @@ class CircleMembersPage extends StatelessWidget {
       careCircleId: _viewModel.circle!.careCircleId,
       olderAdultFirstName: _viewModel.olderAdultFirstName,
       members: _viewModel.members,
+      token: _viewModel.token,
     );
     await Navigator.push(
       context,
