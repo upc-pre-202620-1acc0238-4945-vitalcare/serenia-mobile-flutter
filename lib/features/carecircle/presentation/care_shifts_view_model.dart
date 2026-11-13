@@ -7,6 +7,7 @@ import 'package:serenia_app/features/carecircle/domain/care_shift_already_covere
 import 'package:serenia_app/features/carecircle/domain/care_shift_date_not_allowed_exception.dart';
 import 'package:serenia_app/features/carecircle/domain/care_shift_rules.dart';
 import 'package:serenia_app/features/carecircle/domain/circle_member.dart';
+import 'package:serenia_app/features/carecircle/presentation/circle_date_format.dart';
 
 class CareShiftsViewModel extends ChangeNotifier {
   final GetCareShiftsUseCase _getCareShifts;
@@ -87,6 +88,7 @@ class CareShiftsViewModel extends ChangeNotifier {
     weekStart = _mondayOf(today);
     selectedIndex = today.weekday - 1;
     days = [];
+    await CircleDateFormat.ensureInitialized();
     await loadWeek();
   }
 
