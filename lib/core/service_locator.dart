@@ -5,6 +5,15 @@ import 'package:serenia_app/core/session_storage.dart';
 import 'package:serenia_app/features/account/presentation/account_view_model.dart';
 import 'package:serenia_app/features/account/presentation/change_password_view_model.dart';
 import 'package:serenia_app/features/account/presentation/profile_data_view_model.dart';
+import 'package:serenia_app/features/alertsandsafety/application/acknowledge_alert_use_case.dart';
+import 'package:serenia_app/features/alertsandsafety/application/get_alerts_use_case.dart';
+import 'package:serenia_app/features/alertsandsafety/application/resolve_alert_use_case.dart';
+import 'package:serenia_app/features/alertsandsafety/domain/alerts_repository.dart';
+import 'package:serenia_app/features/alertsandsafety/domain/care_alert.dart';
+import 'package:serenia_app/features/alertsandsafety/infrastructure/alerts_repository_impl.dart';
+import 'package:serenia_app/features/alertsandsafety/infrastructure/remote/alerts_api.dart';
+import 'package:serenia_app/features/alertsandsafety/presentation/alert_detail_view_model.dart';
+import 'package:serenia_app/features/alertsandsafety/presentation/alerts_view_model.dart';
 import 'package:serenia_app/features/carecircle/application/get_my_circle_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/has_family_link_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/redeem_invitation_code_use_case.dart';
@@ -154,5 +163,41 @@ void setupDependencies() {
   getIt.registerFactory<ChangePasswordViewModel>(
     () =>
         ChangePasswordViewModel(changePassword: getIt<ChangePasswordUseCase>()),
+  );
+
+  getIt.registerLazySingleton<AlertsApi>(
+    () => AlertsApi(storage: getIt<SessionStorage>()),
+  );
+
+  getIt.registerLazySingleton<AlertsRepository>(
+    () => AlertsRepositoryImpl(api: getIt<AlertsApi>()),
+  );
+
+  getIt.registerLazySingleton<GetAlertsUseCase>(
+    () => GetAlertsUseCase(repository: getIt<AlertsRepository>()),
+  );
+
+  getIt.registerLazySingleton<AcknowledgeAlertUseCase>(
+    () => AcknowledgeAlertUseCase(repository: getIt<AlertsRepository>()),
+  );
+
+  getIt.registerLazySingleton<ResolveAlertUseCase>(
+    () => ResolveAlertUseCase(repository: getIt<AlertsRepository>()),
+  );
+
+  getIt.registerFactory<AlertsViewModel>(
+    () => AlertsViewModel(
+      getMyCircle: getIt<GetMyCircleUseCase>(),
+      getAlerts: getIt<GetAlertsUseCase>(),
+      getUser: getIt<GetUserUseCase>(),
+    ),
+  );
+
+  getIt.registerFactoryParam<AlertDetailViewModel, CareAlert, void>(
+    (alert, _) => AlertDetailViewModel(
+      acknowledge: getIt<AcknowledgeAlertUseCase>(),
+      resolve: getIt<ResolveAlertUseCase>(),
+      alert: alert,
+    ),
   );
 }
