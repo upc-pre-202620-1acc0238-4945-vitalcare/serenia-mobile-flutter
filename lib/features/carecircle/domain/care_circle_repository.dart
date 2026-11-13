@@ -8,4 +8,5 @@ abstract class CareCircleRepository {
     String relationshipLabel,
   );
   Future<CareCircle> getCareCircle(String careCircleId);
+  Future<List<FamilyLink>> getCircleFamilyLinks(String careCircleId);
 }

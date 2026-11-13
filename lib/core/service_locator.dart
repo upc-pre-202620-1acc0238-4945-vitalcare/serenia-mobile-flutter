@@ -21,6 +21,16 @@ import 'package:serenia_app/features/carecircle/domain/care_circle_repository.da
 import 'package:serenia_app/features/carecircle/infrastructure/care_circle_repository_impl.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_api.dart';
 import 'package:serenia_app/features/carecircle/presentation/connected_view_model.dart';
+import 'package:serenia_app/features/carecircle/application/get_care_shifts_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/get_circle_members_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/get_shared_notes_use_case.dart';
+import 'package:serenia_app/features/carecircle/domain/care_shift_repository.dart';
+import 'package:serenia_app/features/carecircle/domain/shared_note_repository.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/care_shift_repository_impl.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/remote/care_shifts_api.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/remote/shared_notes_api.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/shared_note_repository_impl.dart';
+import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/invitation_code_view_model.dart';
 import 'package:serenia_app/features/iam/application/get_current_user_use_case.dart';
 import 'package:serenia_app/features/iam/application/get_user_use_case.dart';
@@ -198,6 +208,53 @@ void setupDependencies() {
       acknowledge: getIt<AcknowledgeAlertUseCase>(),
       resolve: getIt<ResolveAlertUseCase>(),
       alert: alert,
+    ),
+  );
+
+  getIt.registerLazySingleton<GetCircleMembersUseCase>(
+    () => GetCircleMembersUseCase(
+      repository: getIt<CareCircleRepository>(),
+      authRepository: getIt<AuthRepository>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CareShiftsApi>(
+    () => CareShiftsApi(storage: getIt<SessionStorage>()),
+  );
+
+  getIt.registerLazySingleton<CareShiftRepository>(
+    () => CareShiftRepositoryImpl(
+      api: getIt<CareShiftsApi>(),
+      storage: getIt<SessionStorage>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetCareShiftsUseCase>(
+    () => GetCareShiftsUseCase(repository: getIt<CareShiftRepository>()),
+  );
+
+  getIt.registerLazySingleton<SharedNotesApi>(
+    () => SharedNotesApi(storage: getIt<SessionStorage>()),
+  );
+
+  getIt.registerLazySingleton<SharedNoteRepository>(
+    () => SharedNoteRepositoryImpl(
+      api: getIt<SharedNotesApi>(),
+      storage: getIt<SessionStorage>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetSharedNotesUseCase>(
+    () => GetSharedNotesUseCase(repository: getIt<SharedNoteRepository>()),
+  );
+
+  getIt.registerLazySingleton<CircleViewModel>(
+    () => CircleViewModel(
+      getMyCircle: getIt<GetMyCircleUseCase>(),
+      getCircleMembers: getIt<GetCircleMembersUseCase>(),
+      getCareShifts: getIt<GetCareShiftsUseCase>(),
+      getSharedNotes: getIt<GetSharedNotesUseCase>(),
+      storage: getIt<SessionStorage>(),
     ),
   );
 }

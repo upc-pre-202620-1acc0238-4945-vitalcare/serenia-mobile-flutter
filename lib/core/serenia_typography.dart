@@ -53,4 +53,7 @@ class SereniaTypography {
     labelMedium: _style(16, 22, FontWeight.w700, tracking: 0.002),
     labelSmall: _style(16, 20, FontWeight.w600, tracking: 0.08),
   );
+
+  static final TextStyle cardTitle = _style(17, 22, FontWeight.w800);
+  static final TextStyle cardSubtitle = _style(14, 20, FontWeight.w400);
 }
