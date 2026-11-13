@@ -56,4 +56,17 @@ class SereniaTypography {
 
   static final TextStyle cardTitle = _style(17, 22, FontWeight.w800);
   static final TextStyle cardSubtitle = _style(14, 20, FontWeight.w400);
+  static final TextStyle overline = _style(
+    13,
+    16,
+    FontWeight.w700,
+    tracking: 0.06,
+  );
+  static final TextStyle dayTitle = _style(20, 26, FontWeight.w800);
+  static final TextStyle cardBody = _style(15, 22, FontWeight.w400);
+  static final TextStyle cardBodyStrong = _style(15, 22, FontWeight.w700);
+  static final TextStyle weekRange = _style(16, 22, FontWeight.w800);
+  static final TextStyle weekDay = _style(12, 16, FontWeight.w700);
+  static final TextStyle weekNumber = _style(20, 24, FontWeight.w800);
+  static final TextStyle weekWho = _style(11, 14, FontWeight.w700);
 }
