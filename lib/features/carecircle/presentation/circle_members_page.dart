@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:serenia_app/core/authorized_image.dart';
 import 'package:serenia_app/core/serenia_colors.dart';
 import 'package:serenia_app/core/serenia_dimens.dart';
+import 'package:serenia_app/core/service_locator.dart';
 import 'package:serenia_app/core/widgets/load_error.dart';
 import 'package:serenia_app/core/widgets/member_tile.dart';
 import 'package:serenia_app/core/widgets/nav_card.dart';
@@ -11,6 +12,8 @@ import 'package:serenia_app/core/widgets/serenia_avatar.dart';
 import 'package:serenia_app/core/widgets/serenia_buttons.dart';
 import 'package:serenia_app/features/carecircle/domain/circle_member.dart';
 import 'package:serenia_app/features/carecircle/domain/relationship.dart';
+import 'package:serenia_app/features/carecircle/presentation/care_shifts_page.dart';
+import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
 
 class CircleMembersPage extends StatelessWidget {
@@ -39,6 +42,22 @@ class CircleMembersPage extends StatelessWidget {
     );
   }
 
+  Future<void> _openCareShifts(BuildContext context) async {
+    final CareShiftsViewModel shifts = getIt<CareShiftsViewModel>();
+    shifts.open(
+      careCircleId: _viewModel.circle!.careCircleId,
+      olderAdultFirstName: _viewModel.olderAdultFirstName,
+      members: _viewModel.members,
+    );
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CareShiftsPage(viewModel: shifts),
+      ),
+    );
+    await _viewModel.load(refresh: true);
+  }
+
   Widget _withoutCircle() {
     return ListView(
       padding: _padding,
@@ -58,7 +77,7 @@ class CircleMembersPage extends StatelessWidget {
     );
   }
 
-  Widget _circle() {
+  Widget _circle(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () => _viewModel.load(refresh: true),
       child: CustomScrollView(
@@ -88,7 +107,7 @@ class CircleMembersPage extends StatelessWidget {
                     iconColor: SereniaColors.teal800,
                     title: 'Turnos de atención',
                     subtitle: _viewModel.shiftSummary,
-                    onTap: () {},
+                    onTap: () => _openCareShifts(context),
                   ),
                   NavCard(
                     icon: Icons.article_outlined,
@@ -122,7 +141,9 @@ class CircleMembersPage extends StatelessWidget {
         child: ListenableBuilder(
           listenable: _viewModel,
           builder: (context, child) {
-            return _viewModel.circle == null ? _withoutCircle() : _circle();
+            return _viewModel.circle == null
+                ? _withoutCircle()
+                : _circle(context);
           },
         ),
       ),

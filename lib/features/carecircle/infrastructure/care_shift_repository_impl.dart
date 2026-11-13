@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:intl/intl.dart';
+import 'package:serenia_app/core/api_exception.dart';
 import 'package:serenia_app/core/session.dart';
 import 'package:serenia_app/core/session_storage.dart';
 import 'package:serenia_app/features/carecircle/domain/care_shift.dart';
+import 'package:serenia_app/features/carecircle/domain/care_shift_already_covered_exception.dart';
+import 'package:serenia_app/features/carecircle/domain/care_shift_date_not_allowed_exception.dart';
 import 'package:serenia_app/features/carecircle/domain/care_shift_repository.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/remote/assign_care_shift_request_dto.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_shift_dto.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_shifts_api.dart';
 
@@ -26,6 +32,26 @@ class CareShiftRepositoryImpl implements CareShiftRepository {
     );
     final Session? session = await _storage.getSession();
     return dtos.map((dto) => _toCareShift(dto, session?.userId)).toList();
+  }
+
+  @override
+  Future<CareShift> assignCareShift(String careCircleId, DateTime date) async {
+    try {
+      final CareShiftDto dto = await _api.assignCareShift(
+        careCircleId,
+        AssignCareShiftRequestDto(shiftDate: _apiDate.format(date)),
+      );
+      final Session? session = await _storage.getSession();
+      return _toCareShift(dto, session?.userId);
+    } on ApiException catch (e) {
+      if (e.statusCode == HttpStatus.conflict) {
+        throw const CareShiftAlreadyCoveredException();
+      }
+      if (e.statusCode == HttpStatus.unprocessableEntity) {
+        throw const CareShiftDateNotAllowedException();
+      }
+      rethrow;
+    }
   }
 
   CareShift _toCareShift(CareShiftDto dto, String? myUserId) {

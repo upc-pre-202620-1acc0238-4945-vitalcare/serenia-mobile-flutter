@@ -1,6 +1,7 @@
 import 'package:flutter/painting.dart';
 
 class SereniaSpacing {
+  static const double xxs = 2;
   static const double xs = 4;
   static const double sm = 8;
   static const double md = 16;
@@ -47,4 +48,8 @@ class SereniaSizes {
   static const double cardIcon = 44;
   static const double memberTile = 68;
   static const double linkIcon = 18;
+  static const double inlineIcon = 18;
+  static const double weekCell = 76;
+  static const double weekCellPadding = 6;
+  static const double weekArrow = 28;
 }
