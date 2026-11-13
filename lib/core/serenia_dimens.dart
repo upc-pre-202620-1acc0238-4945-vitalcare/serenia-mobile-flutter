@@ -45,6 +45,10 @@ class SereniaTouch {
 
 class SereniaSizes {
   static const double avatar = 48;
+  static const double avatarSmall = 40;
+  static const double memberRadioTile = 64;
+  static const double radio = 24;
+  static const double radioDot = 12;
   static const double cardIcon = 44;
   static const double memberTile = 68;
   static const double linkIcon = 18;
