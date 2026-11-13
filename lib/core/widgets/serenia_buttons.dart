@@ -2,7 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:serenia_app/core/serenia_colors.dart';
 import 'package:serenia_app/core/serenia_dimens.dart';
 
-class _PillButton extends StatelessWidget {
+enum ButtonSize {
+  regular(SereniaTouch.button, 16, 20),
+  large(SereniaTouch.accessButton, 18, 22),
+  mayor(64, 22, 26);
+
+  final double minHeight;
+  final double fontSize;
+  final double lineHeight;
+
+  const ButtonSize(this.minHeight, this.fontSize, this.lineHeight);
+}
+
+class PillButton extends StatelessWidget {
   final String _label;
   final VoidCallback? _onPressed;
   final IconData? _icon;
@@ -10,11 +22,11 @@ class _PillButton extends StatelessWidget {
   final Color _foreground;
   final Color? _borderColor;
   final List<BoxShadow> _shadow;
-  final double _minHeight;
-  final double _fontSize;
+  final ButtonSize _size;
   final bool _loading;
 
   const new({
+    super.key,
     required this._label,
     required this._onPressed,
     required this._background,
@@ -22,8 +34,7 @@ class _PillButton extends StatelessWidget {
     this._icon,
     this._borderColor,
     this._shadow = const [],
-    this._minHeight = SereniaTouch.button,
-    this._fontSize = 16,
+    this._size = ButtonSize.regular,
     this._loading = false,
   });
 
@@ -54,7 +65,7 @@ class _PillButton extends StatelessWidget {
               onTap: enabled ? _onPressed : null,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: _minHeight,
+                  minHeight: _size.minHeight,
                   minWidth: double.infinity,
                 ),
                 child: Padding(
@@ -84,8 +95,8 @@ class _PillButton extends StatelessWidget {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: _foreground,
-                                    fontSize: _fontSize,
-                                    height: 20 / 16,
+                                    fontSize: _size.fontSize,
+                                    height: _size.lineHeight / _size.fontSize,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -107,7 +118,7 @@ class PrimaryButton extends StatelessWidget {
   final String _label;
   final VoidCallback? _onPressed;
   final IconData? _icon;
-  final bool _large;
+  final ButtonSize _size;
   final bool _loading;
 
   const new({
@@ -115,21 +126,20 @@ class PrimaryButton extends StatelessWidget {
     required this._label,
     required this._onPressed,
     this._icon,
-    this._large = false,
+    this._size = ButtonSize.regular,
     this._loading = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return _PillButton(
+    return PillButton(
       label: _label,
       onPressed: _onPressed,
       icon: _icon,
       background: SereniaColors.primary,
       foreground: SereniaColors.onPrimary,
       shadow: SereniaShadows.md,
-      minHeight: _large ? SereniaTouch.accessButton : SereniaTouch.button,
-      fontSize: _large ? 18 : 16,
+      size: _size,
       loading: _loading,
     );
   }
@@ -149,7 +159,7 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PillButton(
+    return PillButton(
       label: _label,
       onPressed: _onPressed,
       icon: _icon,
@@ -174,7 +184,7 @@ class AffectiveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PillButton(
+    return PillButton(
       label: _label,
       onPressed: _onPressed,
       icon: _icon,
@@ -193,7 +203,7 @@ class EmergencyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PillButton(
+    return PillButton(
       label: _label,
       onPressed: _onPressed,
       icon: Icons.phone_rounded,
@@ -212,7 +222,7 @@ class StrongOutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PillButton(
+    return PillButton(
       label: _label,
       onPressed: _onPressed,
       background: SereniaColors.surface,
@@ -236,7 +246,7 @@ class QuietButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _PillButton(
+    return PillButton(
       label: _label,
       onPressed: _onPressed,
       icon: _icon,

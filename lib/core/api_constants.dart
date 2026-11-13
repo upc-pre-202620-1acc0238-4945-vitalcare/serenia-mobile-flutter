@@ -1,4 +1,4 @@
 class ApiConstants {
-  static const String baseUrl =
-      'https://serenia-platform.azurewebsites.net/api/v1';
+  static const String host = 'https://serenia-platform.azurewebsites.net';
+  static const String baseUrl = '$host/api/v1';
 }
