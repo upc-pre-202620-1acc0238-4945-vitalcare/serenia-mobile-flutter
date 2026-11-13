@@ -26,6 +26,8 @@ import 'package:serenia_app/features/carecircle/infrastructure/care_circle_repos
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_api.dart';
 import 'package:serenia_app/features/carecircle/presentation/connected_view_model.dart';
 import 'package:serenia_app/features/carecircle/application/assign_care_shift_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/create_shared_note_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/edit_shared_note_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_care_shifts_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_circle_members_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_shared_notes_use_case.dart';
@@ -39,6 +41,7 @@ import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_mo
 import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/invitation_code_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/reassign_care_shift_view_model.dart';
+import 'package:serenia_app/features/carecircle/presentation/shared_notes_view_model.dart';
 import 'package:serenia_app/features/iam/application/get_current_user_use_case.dart';
 import 'package:serenia_app/features/iam/application/get_user_use_case.dart';
 import 'package:serenia_app/features/iam/application/change_password_use_case.dart';
@@ -290,6 +293,22 @@ void setupDependencies() {
   getIt.registerLazySingleton<ReassignCareShiftViewModel>(
     () => ReassignCareShiftViewModel(
       reassignCareShift: getIt<ReassignCareShiftUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<CreateSharedNoteUseCase>(
+    () => CreateSharedNoteUseCase(repository: getIt<SharedNoteRepository>()),
+  );
+
+  getIt.registerLazySingleton<EditSharedNoteUseCase>(
+    () => EditSharedNoteUseCase(repository: getIt<SharedNoteRepository>()),
+  );
+
+  getIt.registerLazySingleton<SharedNotesViewModel>(
+    () => SharedNotesViewModel(
+      getSharedNotes: getIt<GetSharedNotesUseCase>(),
+      createSharedNote: getIt<CreateSharedNoteUseCase>(),
+      editSharedNote: getIt<EditSharedNoteUseCase>(),
     ),
   );
 }
