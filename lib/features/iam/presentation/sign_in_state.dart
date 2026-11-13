@@ -30,7 +30,8 @@ class SignInInvalid extends SignInState {
 
 class SignInSuccess extends SignInState {
   final User user;
-  const new({required this.user});
+  final bool hasFamilyLink;
+  const new({required this.user, required this.hasFamilyLink});
 }
 
 class SignInFailure extends SignInState {

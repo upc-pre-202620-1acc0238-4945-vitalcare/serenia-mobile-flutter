@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:serenia_app/core/api_exception.dart';
 import 'package:serenia_app/core/error_messages.dart';
+import 'package:serenia_app/features/carecircle/application/has_family_link_use_case.dart';
 import 'package:serenia_app/features/iam/application/sign_in_use_case.dart';
 import 'package:serenia_app/features/iam/domain/older_adult_account_exception.dart';
 import 'package:serenia_app/features/iam/domain/user.dart';
@@ -10,7 +11,9 @@ import 'package:serenia_app/features/iam/presentation/sign_in_state.dart';
 
 class SignInViewModel extends Cubit<SignInState> {
   final SignInUseCase _signIn;
-  new({required this._signIn}) : super(const SignInInitial());
+  final HasFamilyLinkUseCase _hasFamilyLink;
+  new({required this._signIn, required this._hasFamilyLink})
+    : super(const SignInInitial());
 
   static const String wrongCredentials =
       'El correo o la contraseña no son correctos. Revisa e intenta de nuevo.';
@@ -46,7 +49,8 @@ class SignInViewModel extends Cubit<SignInState> {
 
     try {
       final User user = await _signIn.execute(email, password);
-      emit(SignInSuccess(user: user));
+      final bool hasFamilyLink = await _hasFamilyLink.execute();
+      emit(SignInSuccess(user: user, hasFamilyLink: hasFamilyLink));
     } on OlderAdultAccountException {
       emit(const SignInFailure(message: olderAdultAccount));
     } on ApiException catch (e) {
