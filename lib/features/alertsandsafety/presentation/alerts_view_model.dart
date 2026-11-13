@@ -85,6 +85,7 @@ class AlertsViewModel extends Cubit<AlertsState> {
           people: AlertPeople(
             myUserId: circle.myUserId,
             olderAdultFirstName: circle.olderAdultFirstName,
+            olderAdultPhoneNumber: circle.olderAdult.phoneNumber,
             firstNames: Map.of(_firstNames),
           ),
         ),
