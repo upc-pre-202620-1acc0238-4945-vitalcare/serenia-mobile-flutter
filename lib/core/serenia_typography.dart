@@ -70,4 +70,8 @@ class SereniaTypography {
   static final TextStyle weekNumber = _style(20, 24, FontWeight.w800);
   static final TextStyle weekWho = _style(11, 14, FontWeight.w700);
   static final TextStyle listTitle = _style(16, 22, FontWeight.w800);
+  static final TextStyle noteAuthor = _style(14, 20, FontWeight.w800);
+  static final TextStyle noteMeta = _style(13, 18, FontWeight.w400);
+  static final TextStyle noteText = _style(16, 22, FontWeight.w400);
+  static final TextStyle linkAction = _style(15, 20, FontWeight.w800);
 }
