@@ -2,6 +2,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:serenia_app/core/secure_session_storage.dart';
 import 'package:serenia_app/core/session_storage.dart';
+import 'package:serenia_app/features/account/presentation/account_view_model.dart';
+import 'package:serenia_app/features/account/presentation/change_password_view_model.dart';
+import 'package:serenia_app/features/account/presentation/profile_data_view_model.dart';
 import 'package:serenia_app/features/carecircle/application/get_my_circle_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/has_family_link_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/redeem_invitation_code_use_case.dart';
@@ -12,6 +15,10 @@ import 'package:serenia_app/features/carecircle/presentation/connected_view_mode
 import 'package:serenia_app/features/carecircle/presentation/invitation_code_view_model.dart';
 import 'package:serenia_app/features/iam/application/get_current_user_use_case.dart';
 import 'package:serenia_app/features/iam/application/get_user_use_case.dart';
+import 'package:serenia_app/features/iam/application/change_password_use_case.dart';
+import 'package:serenia_app/features/iam/application/update_profile_use_case.dart';
+import 'package:serenia_app/features/iam/application/upload_profile_photo_use_case.dart';
+import 'package:serenia_app/features/iam/domain/user.dart';
 import 'package:serenia_app/features/iam/application/is_signed_in_use_case.dart';
 import 'package:serenia_app/features/iam/application/sign_in_use_case.dart';
 import 'package:serenia_app/features/iam/application/sign_out_use_case.dart';
@@ -113,5 +120,39 @@ void setupDependencies() {
       getMyCircle: getIt<GetMyCircleUseCase>(),
       getCurrentUser: getIt<GetCurrentUserUseCase>(),
     ),
+  );
+
+  getIt.registerLazySingleton<UpdateProfileUseCase>(
+    () => UpdateProfileUseCase(repository: getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<UploadProfilePhotoUseCase>(
+    () => UploadProfilePhotoUseCase(repository: getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<ChangePasswordUseCase>(
+    () => ChangePasswordUseCase(repository: getIt<AuthRepository>()),
+  );
+
+  getIt.registerFactory<AccountViewModel>(
+    () => AccountViewModel(
+      getCurrentUser: getIt<GetCurrentUserUseCase>(),
+      getMyCircle: getIt<GetMyCircleUseCase>(),
+      signOut: getIt<SignOutUseCase>(),
+      storage: getIt<SessionStorage>(),
+    ),
+  );
+
+  getIt.registerFactoryParam<ProfileDataViewModel, User, void>(
+    (user, _) => ProfileDataViewModel(
+      updateProfile: getIt<UpdateProfileUseCase>(),
+      uploadPhoto: getIt<UploadProfilePhotoUseCase>(),
+      user: user,
+    ),
+  );
+
+  getIt.registerFactory<ChangePasswordViewModel>(
+    () =>
+        ChangePasswordViewModel(changePassword: getIt<ChangePasswordUseCase>()),
   );
 }
