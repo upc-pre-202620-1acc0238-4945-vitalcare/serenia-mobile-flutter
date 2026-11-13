@@ -66,4 +66,19 @@ class CareCircleApi {
     }
     throw ApiException.fromResponse(response);
   }
+
+  Future<List<FamilyLinkDto>> getFamilyLinksOfCircle(
+    String careCircleId,
+  ) async {
+    final http.Response response = await http.get(
+      Uri.parse('$careCirclesUrl/$careCircleId/family-links'),
+      headers: await _headers(),
+    );
+
+    if (response.statusCode == HttpStatus.ok) {
+      final List jsons = _decode(response);
+      return jsons.map((json) => FamilyLinkDto.fromJson(json)).toList();
+    }
+    throw ApiException.fromResponse(response);
+  }
 }
