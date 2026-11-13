@@ -7,4 +7,9 @@ abstract class CareShiftRepository {
     DateTime to,
   );
   Future<CareShift> assignCareShift(String careCircleId, DateTime date);
+  Future<CareShift> reassignCareShift(
+    String careCircleId,
+    String careShiftId,
+    String relativeId,
+  );
 }

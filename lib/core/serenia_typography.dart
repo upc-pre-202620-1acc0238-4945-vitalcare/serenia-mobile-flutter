@@ -69,4 +69,5 @@ class SereniaTypography {
   static final TextStyle weekDay = _style(12, 16, FontWeight.w700);
   static final TextStyle weekNumber = _style(20, 24, FontWeight.w800);
   static final TextStyle weekWho = _style(11, 14, FontWeight.w700);
+  static final TextStyle listTitle = _style(16, 22, FontWeight.w800);
 }

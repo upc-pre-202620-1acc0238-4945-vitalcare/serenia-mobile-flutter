@@ -8,6 +8,7 @@ import 'package:serenia_app/core/api_headers.dart';
 import 'package:serenia_app/core/session_storage.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/assign_care_shift_request_dto.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_shift_dto.dart';
+import 'package:serenia_app/features/carecircle/infrastructure/remote/reassign_care_shift_request_dto.dart';
 
 class CareShiftsApi {
   final SessionStorage _storage;
@@ -52,6 +53,23 @@ class CareShiftsApi {
     );
 
     if (response.statusCode == HttpStatus.created) {
+      return CareShiftDto.fromJson(_decode(response));
+    }
+    throw ApiException.fromResponse(response);
+  }
+
+  Future<CareShiftDto> reassignCareShift(
+    String careCircleId,
+    String careShiftId,
+    ReassignCareShiftRequestDto request,
+  ) async {
+    final http.Response response = await http.put(
+      Uri.parse('$careCirclesUrl/$careCircleId/care-shifts/$careShiftId'),
+      headers: await _headers(),
+      body: jsonEncode(request.toJson()),
+    );
+
+    if (response.statusCode == HttpStatus.ok) {
       return CareShiftDto.fromJson(_decode(response));
     }
     throw ApiException.fromResponse(response);
