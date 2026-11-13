@@ -20,6 +20,7 @@ import 'package:serenia_app/features/alertsandsafety/presentation/alerts_view_mo
 import 'package:serenia_app/features/carecircle/application/get_my_circle_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/has_family_link_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/redeem_invitation_code_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/reassign_care_shift_use_case.dart';
 import 'package:serenia_app/features/carecircle/domain/care_circle_repository.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/care_circle_repository_impl.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_api.dart';
@@ -37,6 +38,7 @@ import 'package:serenia_app/features/carecircle/infrastructure/shared_note_repos
 import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/invitation_code_view_model.dart';
+import 'package:serenia_app/features/carecircle/presentation/reassign_care_shift_view_model.dart';
 import 'package:serenia_app/features/iam/application/get_current_user_use_case.dart';
 import 'package:serenia_app/features/iam/application/get_user_use_case.dart';
 import 'package:serenia_app/features/iam/application/change_password_use_case.dart';
@@ -278,6 +280,16 @@ void setupDependencies() {
     () => CareShiftsViewModel(
       getCareShifts: getIt<GetCareShiftsUseCase>(),
       assignCareShift: getIt<AssignCareShiftUseCase>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<ReassignCareShiftUseCase>(
+    () => ReassignCareShiftUseCase(repository: getIt<CareShiftRepository>()),
+  );
+
+  getIt.registerLazySingleton<ReassignCareShiftViewModel>(
+    () => ReassignCareShiftViewModel(
+      reassignCareShift: getIt<ReassignCareShiftUseCase>(),
     ),
   );
 }
