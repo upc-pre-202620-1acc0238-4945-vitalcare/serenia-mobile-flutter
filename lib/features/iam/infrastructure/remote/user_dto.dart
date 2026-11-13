@@ -4,6 +4,7 @@ class UserDto {
   final String role;
   final String fullName;
   final String? phoneNumber;
+  final String? birthDate;
   final String? photoUrl;
 
   const new({
@@ -12,6 +13,7 @@ class UserDto {
     required this.role,
     required this.fullName,
     required this.phoneNumber,
+    required this.birthDate,
     required this.photoUrl,
   });
 
@@ -22,6 +24,7 @@ class UserDto {
       role: json['role'],
       fullName: json['fullName'],
       phoneNumber: json['phoneNumber'],
+      birthDate: json['birthDate'],
       photoUrl: json['photoUrl'],
     );
   }
