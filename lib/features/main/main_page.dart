@@ -9,6 +9,10 @@ import 'package:serenia_app/features/socialcompanionship/presentation/messages_p
 class MainPage extends StatefulWidget {
   const new({super.key});
 
+  static void showTab(BuildContext context, SereniaTab tab) {
+    context.findAncestorStateOfType<_MainPageState>()?._select(tab);
+  }
+
   @override
   State<MainPage> createState() => _MainPageState();
 }
