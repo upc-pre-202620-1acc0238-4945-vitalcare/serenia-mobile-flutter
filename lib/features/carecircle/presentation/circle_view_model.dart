@@ -5,9 +5,11 @@ import 'package:serenia_app/features/carecircle/application/get_care_shifts_use_
 import 'package:serenia_app/features/carecircle/application/get_circle_members_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_my_circle_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_shared_notes_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/revoke_family_link_use_case.dart';
 import 'package:serenia_app/features/carecircle/domain/care_shift.dart';
 import 'package:serenia_app/features/carecircle/domain/circle_member.dart';
 import 'package:serenia_app/features/carecircle/domain/my_circle.dart';
+import 'package:serenia_app/features/carecircle/domain/revoke_family_link_not_allowed_exception.dart';
 import 'package:serenia_app/features/carecircle/domain/shared_note.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_date_format.dart';
 
@@ -16,6 +18,7 @@ class CircleViewModel extends ChangeNotifier {
   final GetCircleMembersUseCase _getCircleMembers;
   final GetCareShiftsUseCase _getCareShifts;
   final GetSharedNotesUseCase _getSharedNotes;
+  final RevokeFamilyLinkUseCase _revokeFamilyLink;
   final SessionStorage _storage;
 
   new({
@@ -23,10 +26,13 @@ class CircleViewModel extends ChangeNotifier {
     required this._getCircleMembers,
     required this._getCareShifts,
     required this._getSharedNotes,
+    required this._revokeFamilyLink,
     required this._storage,
   });
 
   static const String noLink = 'Aún no tienes un familiar vinculado.';
+  static const String revokeNotAllowed =
+      'No pudimos quitar tu vínculo. Intenta de nuevo en un momento.';
 
   bool isLoading = false;
   String? errorMessage;
@@ -35,9 +41,14 @@ class CircleViewModel extends ChangeNotifier {
   CareShift? todayShift;
   List<SharedNote> notes = [];
   String? token;
+  bool confirmingRevoke = false;
+  bool isRevoking = false;
+  String? revokeError;
 
   Future<void> load({bool refresh = false}) async {
     if (!refresh) {
+      confirmingRevoke = false;
+      revokeError = null;
       circle = null;
       members = [];
       todayShift = null;
@@ -121,5 +132,46 @@ class CircleViewModel extends ChangeNotifier {
         ? 'la última es tuya'
         : 'la última $author';
     return '${notes.length} notas · $last, $when';
+  }
+
+  String get revokeTitle => '¿Quitar tu vínculo con $olderAdultFirstName?';
+
+  void askRevoke() {
+    confirmingRevoke = true;
+    revokeError = null;
+    notifyListeners();
+  }
+
+  void cancelRevoke() {
+    if (isRevoking) return;
+    confirmingRevoke = false;
+    revokeError = null;
+    notifyListeners();
+  }
+
+  Future<bool> revoke() async {
+    final MyCircle? current = circle;
+    if (current == null || isRevoking) return false;
+    isRevoking = true;
+    revokeError = null;
+    notifyListeners();
+    try {
+      await _revokeFamilyLink.execute(current);
+      confirmingRevoke = false;
+      circle = null;
+      members = [];
+      todayShift = null;
+      notes = [];
+      return true;
+    } on RevokeFamilyLinkNotAllowedException {
+      revokeError = revokeNotAllowed;
+      return false;
+    } catch (e) {
+      revokeError = ErrorMessages.from(e);
+      return false;
+    } finally {
+      isRevoking = false;
+      notifyListeners();
+    }
   }
 }

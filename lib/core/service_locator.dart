@@ -21,6 +21,7 @@ import 'package:serenia_app/features/carecircle/application/get_my_circle_use_ca
 import 'package:serenia_app/features/carecircle/application/has_family_link_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/redeem_invitation_code_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/reassign_care_shift_use_case.dart';
+import 'package:serenia_app/features/carecircle/application/revoke_family_link_use_case.dart';
 import 'package:serenia_app/features/carecircle/domain/care_circle_repository.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/care_circle_repository_impl.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_api.dart';
@@ -271,6 +272,7 @@ void setupDependencies() {
       getCircleMembers: getIt<GetCircleMembersUseCase>(),
       getCareShifts: getIt<GetCareShiftsUseCase>(),
       getSharedNotes: getIt<GetSharedNotesUseCase>(),
+      revokeFamilyLink: getIt<RevokeFamilyLinkUseCase>(),
       storage: getIt<SessionStorage>(),
     ),
   );
@@ -310,5 +312,9 @@ void setupDependencies() {
       createSharedNote: getIt<CreateSharedNoteUseCase>(),
       editSharedNote: getIt<EditSharedNoteUseCase>(),
     ),
+  );
+
+  getIt.registerLazySingleton<RevokeFamilyLinkUseCase>(
+    () => RevokeFamilyLinkUseCase(repository: getIt<CareCircleRepository>()),
   );
 }
