@@ -46,4 +46,19 @@ class CircleDateFormat {
     }
     return '${dayMonth.format(start)} – ${dayMonth.format(end)}';
   }
+
+  static String time(DateTime at) {
+    return DateFormat(
+      'h:mm a',
+      locale,
+    ).format(at).replaceAll('\u202F', ' ').replaceAll('\u00A0', ' ');
+  }
+
+  static String noteWhen(DateTime at, DateTime now) {
+    final int days = daysBetween(at, now);
+    if (days <= 0) return 'hoy, ${time(at)}';
+    if (days == 1) return 'ayer';
+    if (days < DateTime.daysPerWeek) return weekdayLong(at);
+    return DateFormat("d 'de' MMMM", locale).format(at);
+  }
 }

@@ -46,6 +46,7 @@ class SereniaTouch {
 class SereniaSizes {
   static const double avatar = 48;
   static const double avatarSmall = 40;
+  static const double avatarTiny = 32;
   static const double memberRadioTile = 64;
   static const double radio = 24;
   static const double radioDot = 12;
@@ -53,6 +54,8 @@ class SereniaSizes {
   static const double memberTile = 68;
   static const double linkIcon = 18;
   static const double inlineIcon = 18;
+  static const double focusBorder = 3;
+  static const int noteLines = 3;
   static const double weekCell = 76;
   static const double weekCellPadding = 6;
   static const double weekArrow = 28;
