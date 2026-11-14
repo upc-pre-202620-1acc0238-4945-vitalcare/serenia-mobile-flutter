@@ -134,25 +134,36 @@ class _AlertsView extends StatelessWidget {
       }
       return const Center(child: CircularProgressIndicator());
     }
-    if (state.alerts.isEmpty) {
-      return EmptyState(
-        icon: Icons.check_rounded,
-        tint: SereniaColors.verde100,
-        iconColor: SereniaColors.verde700,
-        title: 'Todo en calma',
-        body:
-            '${people.olderAdultFirstName} no tiene alertas. Te avisaremos '
-            'solo si algo se sale de lo habitual.',
-      );
-    }
     return RefreshIndicator(
       onRefresh: viewModel.load,
-      child: ListView(
+      child: state.alerts.isEmpty
+          ? _empty(people)
+          : ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                ..._section(context, 'Pendientes', state.open, people),
+                ..._section(context, 'Anteriores', state.previous, people),
+              ],
+            ),
+    );
+  }
+
+  Widget _empty(AlertPeople people) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          ..._section(context, 'Pendientes', state.open, people),
-          ..._section(context, 'Anteriores', state.previous, people),
-        ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: EmptyState(
+            icon: Icons.check_rounded,
+            tint: SereniaColors.verde100,
+            iconColor: SereniaColors.verde700,
+            title: 'Todo en calma',
+            body:
+                '${people.olderAdultFirstName} no tiene alertas. Te avisaremos '
+                'solo si algo se sale de lo habitual.',
+          ),
+        ),
       ),
     );
   }
