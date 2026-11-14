@@ -81,4 +81,17 @@ class CareCircleApi {
     }
     throw ApiException.fromResponse(response);
   }
+
+  Future<void> revokeFamilyLink(
+    String careCircleId,
+    String familyLinkId,
+  ) async {
+    final http.Response response = await http.delete(
+      Uri.parse('$careCirclesUrl/$careCircleId/family-links/$familyLinkId'),
+      headers: await _headers(),
+    );
+
+    if (response.statusCode == HttpStatus.noContent) return;
+    throw ApiException.fromResponse(response);
+  }
 }
