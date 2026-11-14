@@ -83,7 +83,7 @@ extension AlertPresentation on CareAlert {
     if (isEmergency && notified) {
       steps.add(
         TimelineStep(
-          title: 'Avisamos a tu familia',
+          title: people.notifiedLine,
           at: triggeredAt,
           color: SereniaColors.neutro400,
         ),
@@ -92,11 +92,13 @@ extension AlertPresentation on CareAlert {
     if (acknowledgedAt != null) {
       final bool me = people.isMe(acknowledgedBy);
       final String name = _who(acknowledgedBy, people);
+      final String? othersKnow = people.alreadyKnowLine;
+      final String attending = othersKnow == null
+          ? 'Tú la estás atendiendo'
+          : 'Tú la estás atendiendo · $othersKnow';
       final String title = status.isResolved
           ? (me ? 'Tú te encargaste' : '${_capitalize(name)} se encargó')
-          : (me
-                ? 'Tú la estás atendiendo'
-                : '${_capitalize(name)} la está atendiendo');
+          : (me ? attending : '${_capitalize(name)} la está atendiendo');
       steps.add(
         TimelineStep(
           title: title,
