@@ -1,5 +1,5 @@
 name: serenia_app
-description: "A new Flutter project."
+description: "Serenia app for distant relatives."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -9,11 +9,34 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_secure_storage: ^11.2.0
+  get_it: ^9.3.0
+  http: ^1.6.0
+  http_parser: ^4.1.2
+  image_picker: ^1.2.4
+  intl: ^0.20.3
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/nunito_regular.ttf
+        - asset: assets/fonts/nunito_medium.ttf
+          weight: 500
+        - asset: assets/fonts/nunito_semibold.ttf
+          weight: 600
+        - asset: assets/fonts/nunito_bold.ttf
+          weight: 700
+        - asset: assets/fonts/nunito_extrabold.ttf
+          weight: 800
