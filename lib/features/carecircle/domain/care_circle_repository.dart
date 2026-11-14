@@ -9,4 +9,5 @@ abstract class CareCircleRepository {
   );
   Future<CareCircle> getCareCircle(String careCircleId);
   Future<List<FamilyLink>> getCircleFamilyLinks(String careCircleId);
+  Future<void> revokeFamilyLink(String careCircleId, String familyLinkId);
 }

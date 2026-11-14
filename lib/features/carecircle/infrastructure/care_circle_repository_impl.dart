@@ -7,6 +7,7 @@ import 'package:serenia_app/features/carecircle/domain/care_circle.dart';
 import 'package:serenia_app/features/carecircle/domain/care_circle_repository.dart';
 import 'package:serenia_app/features/carecircle/domain/family_link.dart';
 import 'package:serenia_app/features/carecircle/domain/invalid_invitation_code_exception.dart';
+import 'package:serenia_app/features/carecircle/domain/revoke_family_link_not_allowed_exception.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_api.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/care_circle_dto.dart';
 import 'package:serenia_app/features/carecircle/infrastructure/remote/family_link_dto.dart';
@@ -80,6 +81,26 @@ class CareCircleRepositoryImpl implements CareCircleRepository {
       careCircleId,
     );
     return dtos.map(_toFamilyLink).toList();
+  }
+
+  @override
+  Future<void> revokeFamilyLink(
+    String careCircleId,
+    String familyLinkId,
+  ) async {
+    try {
+      await _api.revokeFamilyLink(careCircleId, familyLinkId);
+    } on ApiException catch (e) {
+      if (e.statusCode == HttpStatus.forbidden ||
+          e.statusCode == HttpStatus.notFound) {
+        throw const RevokeFamilyLinkNotAllowedException();
+      }
+      if (e.statusCode != HttpStatus.conflict) rethrow;
+    }
+    if (_cachedLink?.id == familyLinkId) {
+      _cachedLink = null;
+      _cachedUserId = null;
+    }
   }
 
   FamilyLink _toFamilyLink(FamilyLinkDto dto) {
