@@ -62,8 +62,8 @@ extension AlertPresentation on CareAlert {
   String description(DateTime now) {
     final String when = AlertDateFormat.full(triggeredAt, now);
     return isEmergency
-        ? '$when. Mantuvo presionado su botón de ayuda.'
-        : '$when. Pasó una hora desde su pregunta sin respuesta.';
+        ? '$when Mantuvo presionado su botón de ayuda.'
+        : '$when Pasó una hora desde su pregunta sin respuesta.';
   }
 
   List<TimelineStep> timeline(AlertPeople people) {
