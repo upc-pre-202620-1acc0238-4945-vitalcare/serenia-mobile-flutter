@@ -55,6 +55,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _select(SereniaTab tab) {
+    if (tab == SereniaTab.alerts) _alertsViewModel.load();
     if (tab == _current) {
       _navigatorKeys[tab]!.currentState?.popUntil((route) => route.isFirst);
       return;
