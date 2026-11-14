@@ -3,6 +3,8 @@ import 'package:serenia_app/core/authorized_image.dart';
 import 'package:serenia_app/core/serenia_colors.dart';
 import 'package:serenia_app/core/serenia_dimens.dart';
 import 'package:serenia_app/core/service_locator.dart';
+import 'package:serenia_app/core/widgets/alert_banner.dart';
+import 'package:serenia_app/core/widgets/inline_confirm_card.dart';
 import 'package:serenia_app/core/widgets/load_error.dart';
 import 'package:serenia_app/core/widgets/member_tile.dart';
 import 'package:serenia_app/core/widgets/nav_card.dart';
@@ -15,6 +17,7 @@ import 'package:serenia_app/features/carecircle/domain/relationship.dart';
 import 'package:serenia_app/features/carecircle/presentation/care_shifts_page.dart';
 import 'package:serenia_app/features/carecircle/presentation/care_shifts_view_model.dart';
 import 'package:serenia_app/features/carecircle/presentation/circle_view_model.dart';
+import 'package:serenia_app/features/carecircle/presentation/relationship_page.dart';
 import 'package:serenia_app/features/carecircle/presentation/shared_notes_page.dart';
 import 'package:serenia_app/features/carecircle/presentation/shared_notes_view_model.dart';
 
@@ -78,6 +81,45 @@ class CircleMembersPage extends StatelessWidget {
     await _viewModel.load(refresh: true);
   }
 
+  Future<void> _revoke(BuildContext context) async {
+    if (await _viewModel.revoke() && context.mounted) {
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const RelationshipPage()),
+        (route) => false,
+      );
+    }
+  }
+
+  List<Widget> _revokeSection(BuildContext context) {
+    if (!_viewModel.confirmingRevoke) {
+      return [
+        Center(
+          child: DiscreetLink(
+            label: _viewModel.revokeLabel,
+            icon: Icons.link_off_rounded,
+            onPressed: _viewModel.askRevoke,
+          ),
+        ),
+      ];
+    }
+    return [
+      if (_viewModel.revokeError != null) AlertBanner(_viewModel.revokeError!),
+      InlineConfirmCard(
+        title: _viewModel.revokeTitle,
+        body:
+            'Dejarás de ver cómo está y de recibir sus alertas. '
+            'Tus turnos futuros quedarán libres. '
+            'Para volver, necesitarás un código nuevo de ella.',
+        confirmLabel: 'Sí, quitar mi vínculo',
+        cancelLabel: 'No, mantenerlo',
+        loading: _viewModel.isRevoking,
+        stacked: true,
+        onConfirm: () => _revoke(context),
+        onCancel: _viewModel.cancelRevoke,
+      ),
+    ];
+  }
+
   Widget _withoutCircle() {
     return ListView(
       padding: _padding,
@@ -138,13 +180,7 @@ class CircleMembersPage extends StatelessWidget {
                     onTap: () => _openSharedNotes(context),
                   ),
                   const Spacer(),
-                  Center(
-                    child: DiscreetLink(
-                      label: _viewModel.revokeLabel,
-                      icon: Icons.link_off_rounded,
-                      onPressed: null,
-                    ),
-                  ),
+                  ..._revokeSection(context),
                 ],
               ),
             ),
