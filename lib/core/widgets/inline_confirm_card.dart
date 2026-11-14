@@ -12,6 +12,7 @@ class InlineConfirmCard extends StatelessWidget {
   final VoidCallback? _onConfirm;
   final VoidCallback _onCancel;
   final bool _loading;
+  final bool _stacked;
 
   const new({
     super.key,
@@ -22,6 +23,7 @@ class InlineConfirmCard extends StatelessWidget {
     required this._onConfirm,
     required this._onCancel,
     this._loading = false,
+    this._stacked = false,
   });
 
   @override
@@ -56,25 +58,36 @@ class InlineConfirmCard extends StatelessWidget {
               height: 22 / 15,
             ),
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Expanded(
-                child: PrimaryButton(
-                  label: _confirmLabel,
-                  onPressed: _onConfirm,
-                  loading: _loading,
+          if (_stacked) ...[
+            PrimaryButton(
+              label: _confirmLabel,
+              onPressed: _onConfirm,
+              loading: _loading,
+            ),
+            AffectiveButton(
+              label: _cancelLabel,
+              onPressed: _loading ? null : _onCancel,
+            ),
+          ] else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                Expanded(
+                  child: PrimaryButton(
+                    label: _confirmLabel,
+                    onPressed: _onConfirm,
+                    loading: _loading,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: AffectiveButton(
-                  label: _cancelLabel,
-                  onPressed: _loading ? null : _onCancel,
+                Expanded(
+                  child: AffectiveButton(
+                    label: _cancelLabel,
+                    onPressed: _loading ? null : _onCancel,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );
