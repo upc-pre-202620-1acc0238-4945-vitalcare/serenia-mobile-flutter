@@ -217,6 +217,7 @@ void setupDependencies() {
       getMyCircle: getIt<GetMyCircleUseCase>(),
       getAlerts: getIt<GetAlertsUseCase>(),
       getUser: getIt<GetUserUseCase>(),
+      getCircleMembers: getIt<GetCircleMembersUseCase>(),
     ),
   );
 

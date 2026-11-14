@@ -3,7 +3,9 @@ import 'package:serenia_app/core/error_messages.dart';
 import 'package:serenia_app/features/alertsandsafety/application/get_alerts_use_case.dart';
 import 'package:serenia_app/features/alertsandsafety/domain/care_alert.dart';
 import 'package:serenia_app/features/alertsandsafety/presentation/alert_people.dart';
+import 'package:serenia_app/features/carecircle/application/get_circle_members_use_case.dart';
 import 'package:serenia_app/features/carecircle/application/get_my_circle_use_case.dart';
+import 'package:serenia_app/features/carecircle/domain/circle_member.dart';
 import 'package:serenia_app/features/carecircle/domain/my_circle.dart';
 import 'package:serenia_app/features/iam/application/get_user_use_case.dart';
 import 'package:serenia_app/features/iam/domain/user.dart';
@@ -54,11 +56,13 @@ class AlertsViewModel extends Cubit<AlertsState> {
   final GetMyCircleUseCase _getMyCircle;
   final GetAlertsUseCase _getAlerts;
   final GetUserUseCase _getUser;
+  final GetCircleMembersUseCase _getCircleMembers;
 
   new({
     required this._getMyCircle,
     required this._getAlerts,
     required this._getUser,
+    required this._getCircleMembers,
   }) : super(const AlertsState());
 
   static const String noLink = 'Aún no tienes un familiar vinculado.';
@@ -75,9 +79,16 @@ class AlertsViewModel extends Cubit<AlertsState> {
         emit(state.copyWith(loading: false, loadError: () => noLink));
         return;
       }
+      final Future<List<CircleMember>> loadingMembers = _loadMembers(
+        circle.careCircleId,
+      );
       final List<CareAlert> alerts = await _getAlerts.execute(
         circle.olderAdult.id,
       );
+      final List<CircleMember> members = await loadingMembers;
+      for (final CircleMember member in members) {
+        _firstNames[member.userId] = member.firstName;
+      }
       await _loadFirstNames(alerts, circle.myUserId);
       emit(
         state.copyWith(
@@ -88,6 +99,11 @@ class AlertsViewModel extends Cubit<AlertsState> {
             myUserId: circle.myUserId,
             olderAdultFirstName: circle.olderAdultFirstName,
             olderAdultPhoneNumber: circle.olderAdult.phoneNumber,
+            familyFirstNames: [for (final m in members) m.firstName],
+            otherFamilyFirstNames: [
+              for (final m in members)
+                if (!m.isMe) m.firstName,
+            ],
             firstNames: Map.of(_firstNames),
           ),
         ),
@@ -103,6 +119,14 @@ class AlertsViewModel extends Cubit<AlertsState> {
       } else {
         emit(state.copyWith(message: () => ErrorMessages.from(e)));
       }
+    }
+  }
+
+  Future<List<CircleMember>> _loadMembers(String careCircleId) async {
+    try {
+      return await _getCircleMembers.execute(careCircleId);
+    } catch (_) {
+      return const [];
     }
   }
 

@@ -111,15 +111,16 @@ class _AlertDetailView extends StatelessWidget {
                               ? null
                               : viewModel.acknowledge,
                         ),
-                        const Text(
-                          'Así tus demás familiares sabrán que ya estás en eso.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: SereniaColors.neutro700,
-                            fontSize: 15,
-                            height: 20 / 15,
+                        if (_people.acknowledgeHint != null)
+                          Text(
+                            _people.acknowledgeHint!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: SereniaColors.neutro700,
+                              fontSize: 15,
+                              height: 20 / 15,
+                            ),
                           ),
-                        ),
                       ],
                       if (alert.status.isAcknowledged)
                         PrimaryButton(

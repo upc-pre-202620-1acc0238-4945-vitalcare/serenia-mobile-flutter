@@ -28,7 +28,6 @@ class AlertsPage extends StatelessWidget {
 class _AlertsView extends StatelessWidget {
   const new();
 
-  static const String resolvedMessage = 'Alerta resuelta.';
   static const String outdatedMessage =
       'Esta alerta ya cambió. La actualizamos para ti.';
 
@@ -47,7 +46,7 @@ class _AlertsView extends StatelessWidget {
     await viewModel.load();
     switch (result) {
       case AlertDetailResult.resolved:
-        viewModel.showMessage(resolvedMessage);
+        viewModel.showMessage(people.resolvedMessage);
       case AlertDetailResult.outdated:
         viewModel.showMessage(outdatedMessage);
       case null:
